@@ -90,12 +90,13 @@
                     <div class="input-group"><label>PONTO DE REFERÊNCIA</label><input type="text" id="c-ref" placeholder="Ex: Próximo ao mercado"></div>
                 </div>
 
-                <div class="input-group">
+                                <div class="input-group">
                     <label>PAGAMENTO</label>
                     <select id="c-pag" onchange="toggleTroco()">
+                        <option value="" selected disabled>Escolha uma opção...</option>
                         <option value="Pix">Pix</option>
                         <option value="Dinheiro">Dinheiro</option>
-                        <option value="Cartão">Cartão</option>
+                       
                     </select>
                 </div>
 
@@ -294,7 +295,4 @@
 </script>
 </body>
 </html>
-
-
-
 
