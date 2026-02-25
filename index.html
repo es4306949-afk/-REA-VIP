@@ -8,30 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #ff4757; --green: #2ed573; --dark: #1e272e; --admin: #3742fa; }
-        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         body { 
             background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
                         url('https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=2072&auto=format&fit=crop');
             background-size: cover; background-attachment: fixed; background-position: center;
-            color: white; padding-bottom: 120px;
+            color: white; padding-bottom: 120px; min-height: 100vh;
         }
 
         header { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
         header h1 { font-weight: 800; font-size: 1.8rem; }
         header h1 span { color: var(--primary); }
+
+        .btn-adm-trigger { position: absolute; right: 15px; top: 25px; border: none; background: rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
         
+        .admin-box { background: var(--admin); color: white; margin: 15px; padding: 20px; border-radius: 20px; display: none; border: 2px solid rgba(255,255,255,0.2); }
+        .admin-input { width: 100%; padding: 10px; border-radius: 10px; border: none; margin-top: 5px; background: white; color: black; font-size: 14px; }
+        
+        .horarios-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
+        .dia-label { font-size: 10px; font-weight: 800; align-self: center; }
+
         .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
         .open { background: var(--green); color: white; }
         .closed { background: var(--primary); color: white; }
 
-        /* MODAL DE CHECKOUT */
-        #modal-checkout {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000; display: none;
-            overflow-y: auto; padding: 20px;
-        }
+        #modal-checkout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; overflow-y: auto; padding: 20px; }
         .checkout-card { background: white; color: black; border-radius: 25px; padding: 25px; max-width: 500px; margin: 20px auto; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 5px; color: #666; }
@@ -39,22 +41,23 @@
         .hidden { display: none; }
         
         .resumo-valores { background: #f8f9fa; padding: 15px; border-radius: 15px; margin: 20px 0; }
-        .resumo-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; }
-        .resumo-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; color: var(--green); border-top: 1px solid #ddd; pt: 10px; margin-top: 10px; }
+        .resumo-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; color: var(--green); border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; }
 
-        /* CARDÁPIO */
         .container { max-width: 500px; margin: auto; padding: 15px; }
-        .cat-title { font-weight: 800; font-size: 1.3rem; margin: 30px 0 15px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .cat-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.2); }
-        .item { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border-radius: 20px; padding: 15px; display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        .item-img { width: 90px; height: 90px; border-radius: 15px; object-fit: cover; }
+        .cat-header { display: flex; justify-content: space-between; align-items: center; margin: 30px 0 15px; }
+        .cat-title { font-weight: 800; font-size: 1.3rem; color: var(--primary); }
+        .btn-add-item { background: var(--green); color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; }
+
+        .item { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border-radius: 20px; padding: 15px; display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .item-img { width: 80px; height: 80px; border-radius: 15px; object-fit: cover; background: #333; flex-shrink: 0; }
         .item-info { flex: 1; }
-        .item-name { font-weight: 700; font-size: 1.1rem; }
-        .item-desc { font-size: 0.8rem; color: #ddd; margin-bottom: 8px; }
-        .item-price { color: var(--green); font-weight: 800; }
-        .qty-box { display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 5px; gap: 10px; }
-        .btn-qty { background: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 900; color: var(--primary); cursor: pointer; }
+        .item-price { color: var(--green); font-weight: 800; margin-top: 4px; }
         
+        /* SELETOR DE QUANTIDADE MELHORADO */
+        .qty-box { display: flex; align-items: center; background: rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 4px; gap: 8px; margin-left: 5px; }
+        .btn-qty { background: var(--primary); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .val-qty { font-weight: 800; min-width: 18px; text-align: center; font-size: 14px; }
+
         .cart-footer { position: fixed; bottom: 20px; left: 15px; right: 15px; background: white; color: black; padding: 18px; border-radius: 25px; display: none; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; }
     </style>
 </head>
@@ -63,60 +66,55 @@
 <header>
     <h1>TÁ NA <span>MÃO</span></h1>
     <div id="status-loja"></div>
+    <button class="btn-adm-trigger" onclick="ativarPainel()"><i class="fa-solid fa-lock"></i></button>
 </header>
+
+<div class="admin-box" id="painel-adm">
+    <h3 style="margin-bottom:10px">⚙️ Programação da Semana</h3>
+    <div id="horarios-config" class="horarios-grid"></div>
+    <button onclick="salvarHorarios()" style="width:100%; padding:12px; border-radius:10px; border:none; background:var(--green); color:white; font-weight:bold; margin-top:10px; cursor:pointer;">SALVAR PROGRAMAÇÃO</button>
+</div>
 
 <div id="modal-checkout">
     <div class="checkout-card">
         <h2 style="margin-bottom: 15px;">Finalizar Pedido</h2>
-        
         <div class="form-group">
             <label>SEU NOME</label>
-            <input type="text" id="cli-nome" class="form-input" placeholder="Digite seu nome">
+            <input type="text" id="cli-nome" class="form-input" placeholder="Como te chamamos?">
         </div>
-
         <div class="form-group">
             <label>COMO QUER RECEBER?</label>
             <select id="cli-metodo" class="form-input" onchange="atualizarInterfaceCheckout()">
-                <option value="delivery">Delivery (Entrega em Casa)</option>
+                <option value="" disabled selected hidden>Escolha uma opção</option>
+                <option value="delivery">Delivery (Entrega)</option>
                 <option value="retirada">Retirada no Local</option>
             </select>
         </div>
-
-        <div id="sessao-endereco">
-            <div class="form-group">
-                <label>ENDEREÇO (Rua, Número, Bairro)</label>
-                <input type="text" id="cli-end" class="form-input" placeholder="Ex: Rua das Flores, 123, Centro">
-            </div>
-            <div class="form-group">
-                <label>PONTO DE REFERÊNCIA</label>
-                <input type="text" id="cli-ref" class="form-input" placeholder="Ex: Perto do posto de saúde">
-            </div>
+        <div id="sessao-endereco" class="hidden">
+            <input type="text" id="cli-end" class="form-input" placeholder="Rua, Número e Bairro" style="margin-bottom:10px">
+            <input type="text" id="cli-ref" class="form-input" placeholder="Ponto de Referência">
         </div>
-
-        <div class="form-group">
+        <div class="form-group" style="margin-top:15px">
             <label>FORMA DE PAGAMENTO</label>
             <select id="cli-pagamento" class="form-input" onchange="atualizarInterfaceCheckout()">
+                <option value="" disabled selected hidden>Escolha o pagamento</option>
                 <option value="Pix">Pix</option>
                 <option value="Dinheiro">Dinheiro</option>
             </select>
         </div>
-
         <div id="sessao-troco" class="hidden">
-            <div class="form-group">
-                <label>TROCO PARA QUANTO?</label>
-                <input type="number" id="cli-troco" class="form-input" placeholder="Ex: 50">
-            </div>
+            <input type="number" id="cli-troco" class="form-input" placeholder="Troco para quanto?">
         </div>
-
+        <div class="form-group">
+            <label>OBSERVAÇÕES (OPCIONAL)</label>
+            <textarea id="cli-obs" class="form-input" rows="2" placeholder="Ex: tirar cebola, ponto da carne..."></textarea>
+        </div>
         <div class="resumo-valores">
-            <div class="resumo-item"><span>Produtos:</span> <span id="resumo-prod">R$ 0,00</span></div>
-            <div class="resumo-item" id="linha-taxa"><span>Taxa de Entrega:</span> <span>R$ 3,00</span></div>
             <div class="resumo-total"><span>TOTAL:</span> <span id="resumo-total">R$ 0,00</span></div>
         </div>
-
         <div style="display:flex; gap:10px;">
             <button onclick="fecharCheckout()" style="flex:1; padding:15px; border-radius:12px; border:none; background:#eee; font-weight:bold;">Voltar</button>
-            <button onclick="finalizarPedido()" style="flex:2; padding:15px; border-radius:12px; border:none; background:var(--green); color:white; font-weight:bold;">ENVIAR NO WHATSAPP</button>
+            <button onclick="finalizarPedido()" style="flex:2; padding:15px; border-radius:12px; border:none; background:var(--green); color:white; font-weight:bold;">ENVIAR WHATSAPP</button>
         </div>
     </div>
 </div>
@@ -125,68 +123,121 @@
 
 <div class="cart-footer" id="cart-footer" onclick="abrirCheckout()">
     <span style="font-weight:800;">🛒 <span id="cart-qnt">0</span> Itens</span>
-    <button style="background:var(--green); color:white; border:none; padding:10px 20px; border-radius:15px; font-weight:800;">
-        VER PEDIDO - R$ <span id="cart-total">0,00</span>
-    </button>
+    <button style="background:var(--green); color:white; border:none; padding:10px 20px; border-radius:15px; font-weight:800;">VER PEDIDO</button>
 </div>
 
 <script>
     const WHATSAPP = "5598984502253";
-    const TAXA_DELIVERY = 3.00;
-    
-    let menu = JSON.parse(localStorage.getItem('tanamao_menu_v6')) || {
-        "Hambúrgueres": [{ nome: "X-Bacon", desc: "Pão, carne, queijo e bacon.", preco: 22.00, foto: "", status: "ativo" }],
-        "Bebidas": [{ nome: "Coca-Cola", desc: "Lata 350ml", preco: 6.00, foto: "", status: "ativo" }]
+    let isAdm = false;
+
+    let agenda = JSON.parse(localStorage.getItem('tanamao_agenda')) || {
+        0:{abre:"18:00",fecha:"23:00"}, 1:{abre:"18:00",fecha:"23:00"}, 2:{abre:"18:00",fecha:"23:00"},
+        3:{abre:"18:00",fecha:"23:00"}, 4:{abre:"18:00",fecha:"23:00"}, 5:{abre:"18:00",fecha:"23:00"}, 6:{abre:"18:00",fecha:"23:00"}
     };
 
+    let menu = JSON.parse(localStorage.getItem('tanamao_menu_v6')) || {
+        "Hambúrgueres": [],
+        "Bebidas": []
+    };
+
+    function verificarLojaAberta() {
+        const agora = new Date();
+        const horaAtual = agora.getHours().toString().padStart(2, '0') + ":" + agora.getMinutes().toString().padStart(2, '0');
+        const hoje = agenda[agora.getDay()];
+        return (horaAtual >= hoje.abre && horaAtual <= hoje.fecha);
+    }
+
     function render() {
+        const aberto = verificarLojaAberta();
         const container = document.getElementById('cardapio');
         container.innerHTML = "";
+        document.getElementById('status-loja').innerHTML = aberto ? '<span class="status-badge open">● Aberto</span>' : '<span class="status-badge closed">● Fechado</span>';
+
         for (let cat in menu) {
-            let catHtml = `<div class="cat-title">${cat}</div>`;
+            let catHtml = `
+                <div class="cat-header">
+                    <div class="cat-title">${cat}</div>
+                    ${isAdm ? `<button class="btn-add-item" onclick="addItem('${cat}')">+ NOVO ITEM</button>` : ''}
+                </div>`;
+            
             menu[cat].forEach((p, i) => {
                 catHtml += `
                 <div class="item">
-                    <img src="${p.foto || 'https://via.placeholder.com/100?text=FOTO'}" class="item-img">
+                    <div style="position:relative">
+                        <img src="${p.foto || 'https://via.placeholder.com/100?text=FOTO'}" class="item-img">
+                        ${isAdm ? `<button class="btn-upload" onclick="document.getElementById('file-${cat}-${i}').click()">📷</button>` : ''}
+                        <input type="file" id="file-${cat}-${i}" style="display:none" onchange="uploadFoto('${cat}', ${i}, this)">
+                    </div>
                     <div class="item-info">
-                        <div class="item-name">${p.nome}</div>
-                        <div class="item-desc">${p.desc}</div>
-                        <div class="item-price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
+                        ${isAdm ? `
+                            <input class="admin-input" value="${p.nome}" onchange="edit('${cat}', ${i}, 'nome', this.value)" placeholder="Nome">
+                            <input class="admin-input" value="${p.desc}" onchange="edit('${cat}', ${i}, 'desc', this.value)" placeholder="Ingredientes" style="margin-top:5px">
+                            <input class="admin-input" type="number" value="${p.preco}" onchange="edit('${cat}', ${i}, 'preco', this.value)" style="width:80px">
+                            <button onclick="deleteItem('${cat}', ${i})" style="color:red; background:none; border:none; font-size:10px; cursor:pointer; margin-top:5px">Excluir</button>
+                        ` : `
+                            <div style="font-weight:700">${p.nome}</div>
+                            <div style="font-size:0.8rem; color:#ddd">${p.desc}</div>
+                            <div class="item-price">R$ ${parseFloat(p.preco || 0).toFixed(2).replace('.',',')}</div>
+                        `}
                     </div>
-                    <div class="qty-box">
-                        <button class="btn-qty" onclick="changeQty(this, -1)">-</button>
-                        <span class="val-qty" data-name="${p.nome}" data-price="${p.preco}">0</span>
-                        <button class="btn-qty" onclick="changeQty(this, 1)">+</button>
-                    </div>
+                    ${!isAdm ? `
+                        <div class="qty-box">
+                            <button class="btn-qty" onclick="changeQty(this, -1)">-</button>
+                            <span class="val-qty" data-name="${p.nome}" data-price="${p.preco}">0</span>
+                            <button class="btn-qty" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    ` : ''}
                 </div>`;
             });
             container.insertAdjacentHTML('beforeend', catHtml);
         }
-        document.getElementById('status-loja').innerHTML = '<span class="status-badge open">● Aberto</span>';
+    }
+
+    function ativarPainel() {
+        if (!isAdm && prompt("Senha:") !== "1234") return;
+        isAdm = !isAdm;
+        document.getElementById('painel-adm').style.display = isAdm ? 'block' : 'none';
+        if(isAdm) {
+            const grid = document.getElementById('horarios-config');
+            grid.innerHTML = "";
+            ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].forEach((dia, idx) => {
+                grid.innerHTML += `<div class="dia-label">${dia}</div>
+                <input type="time" class="admin-input" id="abre-${idx}" value="${agenda[idx].abre}">
+                <input type="time" class="admin-input" id="fecha-${idx}" value="${agenda[idx].fecha}">`;
+            });
+        }
+        render();
     }
 
     function changeQty(btn, d) {
         let span = btn.parentElement.querySelector('.val-qty');
         let v = parseInt(span.innerText) + d;
-        if (v < 0) v = 0; span.innerText = v;
+        if (v < 0) v = 0; 
+        span.innerText = v;
         updateCart();
     }
 
     function updateCart() {
         let subtotal = 0, q = 0;
         document.querySelectorAll('.val-qty').forEach(s => {
-            const n = parseInt(s.innerText);
-            subtotal += n * parseFloat(s.getAttribute('data-price'));
-            q += n;
+            const qtd = parseInt(s.innerText);
+            const preco = parseFloat(s.getAttribute('data-price')) || 0;
+            subtotal += qtd * preco;
+            q += qtd;
         });
-        document.getElementById('cart-total').innerText = subtotal.toFixed(2).replace('.',',');
         document.getElementById('cart-qnt').innerText = q;
         document.getElementById('cart-footer').style.display = q > 0 ? 'flex' : 'none';
+        document.getElementById('resumo-total').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        return subtotal;
     }
 
-    function abrirCheckout() {
-        document.getElementById('modal-checkout').style.display = 'block';
-        atualizarInterfaceCheckout();
+    function abrirCheckout() { 
+        if(!verificarLojaAberta()) {
+            if(!confirm("A loja está fechada no momento. Deseja apenas montar o carrinho?")) return;
+        }
+        updateCart();
+        document.getElementById('modal-checkout').style.display = 'block'; 
+        atualizarInterfaceCheckout(); 
     }
 
     function fecharCheckout() { document.getElementById('modal-checkout').style.display = 'none'; }
@@ -194,66 +245,68 @@
     function atualizarInterfaceCheckout() {
         const metodo = document.getElementById('cli-metodo').value;
         const pagamento = document.getElementById('cli-pagamento').value;
-        
-        // Mostrar/Esconder endereço
-        document.getElementById('sessao-endereco').classList.toggle('hidden', metodo === 'retirada');
-        document.getElementById('linha-taxa').classList.toggle('hidden', metodo === 'retirada');
-        
-        // Mostrar/Esconder troco
+        document.getElementById('sessao-endereco').classList.toggle('hidden', metodo !== 'delivery');
         document.getElementById('sessao-troco').classList.toggle('hidden', pagamento !== 'Dinheiro');
-
-        // Calcular Totais do Resumo
-        let subtotal = 0;
-        document.querySelectorAll('.val-qty').forEach(s => subtotal += parseInt(s.innerText) * parseFloat(s.getAttribute('data-price')));
-        
-        let taxa = (metodo === 'delivery') ? TAXA_DELIVERY : 0;
-        
-        document.getElementById('resumo-prod').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
-        document.getElementById('resumo-total').innerText = `R$ ${(subtotal + taxa).toFixed(2).replace('.',',')}`;
     }
 
     function finalizarPedido() {
         const nome = document.getElementById('cli-nome').value;
         const metodo = document.getElementById('cli-metodo').value;
-        const pagamento = document.getElementById('cli-pagamento').value;
+        const pag = document.getElementById('cli-pagamento').value;
+        const obs = document.getElementById('cli-obs').value;
         
-        if(!nome) return alert("Digite seu nome!");
-        if(metodo === 'delivery' && !document.getElementById('cli-end').value) return alert("Digite o endereço para entrega!");
+        if(!nome || !metodo || !pag) return alert("Por favor, preencha Nome, Entrega e Pagamento!");
 
-        let subtotal = 0;
-        let itensMsg = "";
-        document.querySelectorAll('.val-qty').forEach(s => {
-            const q = parseInt(s.innerText);
-            if(q > 0) {
-                itensMsg += `✅ ${q}x ${s.getAttribute('data-name')}\n`;
-                subtotal += q * parseFloat(s.getAttribute('data-price'));
-            }
-        });
-
-        let taxa = (metodo === 'delivery') ? TAXA_DELIVERY : 0;
-        let totalFinal = subtotal + taxa;
-
-        let msg = `*NOVO PEDIDO - TÁ NA MÃO*\n`;
+        let msg = `*🍔 NOVO PEDIDO - TÁ NA MÃO*\n`;
         msg += `------------------------------\n`;
         msg += `👤 *Cliente:* ${nome}\n`;
-        msg += `📍 *Entrega:* ${metodo === 'delivery' ? 'Delivery 🛵' : 'Retirada no Local 🛍️'}\n`;
+        msg += `📍 *Entrega:* ${metodo === 'delivery' ? 'Delivery' : 'Retirada no Local'}\n`;
         
         if(metodo === 'delivery') {
             msg += `🏠 *Endereço:* ${document.getElementById('cli-end').value}\n`;
             msg += `📍 *Ref:* ${document.getElementById('cli-ref').value}\n`;
-            msg += `🚚 *Taxa:* R$ 3,00\n`;
         }
-
-        msg += `💳 *Pagamento:* ${pagamento}\n`;
-        if(pagamento === 'Dinheiro' && document.getElementById('cli-troco').value) {
-            msg += `💵 *Troco para:* R$ ${document.getElementById('cli-troco').value}\n`;
-        }
-
-        msg += `\n*ITENS:*\n${itensMsg}`;
-        msg += `\n*TOTAL: R$ ${totalFinal.toFixed(2).replace('.',',')}*`;
         
+        msg += `💳 *Pagamento:* ${pag}\n`;
+        if(pag === 'Dinheiro') msg += `💵 *Troco para:* R$ ${document.getElementById('cli-troco').value}\n`;
+        if(obs) msg += `📝 *Obs:* ${obs}\n`;
+        msg += `------------------------------\n\n`;
+        msg += `*ITENS DO PEDIDO:*\n`;
+
+        let totalGeral = 0;
+        document.querySelectorAll('.val-qty').forEach(s => {
+            const qtd = parseInt(s.innerText);
+            if(qtd > 0) {
+                const n = s.getAttribute('data-name');
+                const p = parseFloat(s.getAttribute('data-price'));
+                totalGeral += (qtd * p);
+                msg += `✅ ${qtd}x ${n} - R$ ${(qtd*p).toFixed(2)}\n`;
+            }
+        });
+
+        msg += `\n*💰 TOTAL: R$ ${totalGeral.toFixed(2).replace('.',',')}*`;
+
         window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`);
     }
+
+    // Funções ADM
+    function addItem(cat) { menu[cat].push({ nome: "Novo Item", desc: "Descrição", preco: 0.00, foto: "" }); save(); render(); }
+    function edit(cat, i, campo, valor) { menu[cat][i][campo] = campo === 'preco' ? parseFloat(valor) : valor; save(); }
+    function deleteItem(cat, i) { if(confirm("Excluir item?")) { menu[cat].splice(i,1); save(); render(); } }
+    function uploadFoto(cat, i, input) {
+        const reader = new FileReader();
+        reader.onload = (e) => { menu[cat][i].foto = e.target.result; save(); render(); };
+        reader.readAsDataURL(input.files[0]);
+    }
+    function salvarHorarios() {
+        [0,1,2,3,4,5,6].forEach(idx => {
+            agenda[idx].abre = document.getElementById(`abre-${idx}`).value;
+            agenda[idx].fecha = document.getElementById(`fecha-${idx}`).value;
+        });
+        localStorage.setItem('tanamao_agenda', JSON.stringify(agenda));
+        alert("Horários salvos com sucesso!"); render();
+    }
+    function save() { localStorage.setItem('tanamao_menu_v6', JSON.stringify(menu)); }
 
     window.onload = render;
 </script>
