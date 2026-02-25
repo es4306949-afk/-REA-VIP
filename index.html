@@ -3,297 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TÁ NA MÃO | Cardápio Profissional</title>
+    <title>TÁ NA MÃO | Cardápio Digital</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #ff4757; --green: #2ed573; --dark: #1e272e; --admin: #3742fa; --white: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --primary: #ff4757; --green: #2ed573; --dark: #1e272e; --admin: #3742fa; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1965&auto=format&fit=crop');
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                        url('https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=2072&auto=format&fit=crop');
             background-size: cover; background-attachment: fixed; background-position: center;
-            color: var(--dark); padding-bottom: 120px;
+            color: white; padding-bottom: 120px;
         }
 
-        header { background: var(--white); padding: 20px; border-bottom: 4px solid var(--primary); position: sticky; top: 0; z-index: 999; text-align: center; }
-        header h1 { font-weight: 800; font-size: 1.5rem; }
+        header { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
+        header h1 { font-weight: 800; font-size: 1.8rem; }
         header h1 span { color: var(--primary); }
-        .btn-gestor { position: absolute; right: 15px; top: 22px; background: #f1f2f6; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
+        .open { background: var(--green); color: white; }
+        .closed { background: var(--primary); color: white; }
 
-        .container { max-width: 550px; margin: auto; padding: 15px; }
+        /* MODAL DE CHECKOUT */
+        #modal-checkout {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; display: none;
+            overflow-y: auto; padding: 20px;
+        }
+        .checkout-card { background: white; color: black; border-radius: 25px; padding: 25px; max-width: 500px; margin: 20px auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 5px; color: #666; }
+        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; outline: none; }
+        .hidden { display: none; }
+        
+        .resumo-valores { background: #f8f9fa; padding: 15px; border-radius: 15px; margin: 20px 0; }
+        .resumo-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; }
+        .resumo-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; color: var(--green); border-top: 1px solid #ddd; pt: 10px; margin-top: 10px; }
 
-        .categoria-titulo { font-size: 1.3rem; font-weight: 800; margin: 35px 0 15px; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        .categoria-titulo::after { content: ''; flex: 1; height: 3px; background: var(--primary); border-radius: 10px; }
-
-        .item { background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 15px; display: flex; align-items: center; margin-bottom: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        /* CARDÁPIO */
+        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .cat-title { font-weight: 800; font-size: 1.3rem; margin: 30px 0 15px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .cat-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.2); }
+        .item { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border-radius: 20px; padding: 15px; display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .item-img { width: 90px; height: 90px; border-radius: 15px; object-fit: cover; }
         .item-info { flex: 1; }
-        .item-name { font-weight: 800; font-size: 0.95rem; color: var(--dark); text-transform: uppercase; }
-        .item-desc { font-size: 0.75rem; color: #57606f; margin-top: 4px; line-height: 1.4; }
-        .item-price { color: #27ae60; font-weight: 800; font-size: 1.1rem; margin-top: 8px; display: block; }
+        .item-name { font-weight: 700; font-size: 1.1rem; }
+        .item-desc { font-size: 0.8rem; color: #ddd; margin-bottom: 8px; }
+        .item-price { color: var(--green); font-weight: 800; }
+        .qty-box { display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 5px; gap: 10px; }
+        .btn-qty { background: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 900; color: var(--primary); cursor: pointer; }
         
-        .controls { display: flex; flex-direction: column; align-items: center; background: #f1f2f6; border-radius: 15px; padding: 8px; gap: 8px; margin-left: 10px; }
-        .btn-qty { background: var(--white); border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; color: var(--primary); font-weight: bold; font-size: 22px; }
-        .qty { font-weight: 800; }
-
-        #carrinho-modal { position: fixed; bottom: -100%; left: 0; width: 100%; height: 92%; background: #fff; z-index: 10000; border-radius: 30px 30px 0 0; transition: 0.4s; display: flex; flex-direction: column; }
-        #carrinho-modal.active { bottom: 0; }
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; z-index: 9999; backdrop-filter: blur(5px); }
-        
-        .form-checkout { background: #f8f9fa; padding: 20px; border-radius: 20px; margin-top: 15px; }
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 5px; color: #666; }
-        .form-checkout input, .form-checkout select { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; }
-
-        .footer-cart { position: fixed; bottom: 20px; left: 15px; right: 15px; background: var(--dark); color: white; padding: 20px; border-radius: 25px; display: none; justify-content: space-between; align-items: center; z-index: 999; }
-        .footer-cart.visible { display: flex; }
-        .btn-finalizar { background: var(--green); color: white; border: none; padding: 20px; border-radius: 18px; font-weight: 800; width: 100%; cursor: pointer; font-size: 1.1rem; }
+        .cart-footer { position: fixed; bottom: 20px; left: 15px; right: 15px; background: white; color: black; padding: 18px; border-radius: 25px; display: none; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>TÁ NA <span>MÃO</span></h1>
-    <button class="btn-gestor" onclick="abrirAdmin()"><i class="fa-solid fa-gear"></i> ADM</button>
+    <div id="status-loja"></div>
 </header>
 
-<div class="container">
-    <div id="cardapio-dinamico"></div>
-</div>
+<div id="modal-checkout">
+    <div class="checkout-card">
+        <h2 style="margin-bottom: 15px;">Finalizar Pedido</h2>
+        
+        <div class="form-group">
+            <label>SEU NOME</label>
+            <input type="text" id="cli-nome" class="form-input" placeholder="Digite seu nome">
+        </div>
 
-<div class="overlay" id="overlay" onclick="toggleCarrinho()"></div>
+        <div class="form-group">
+            <label>COMO QUER RECEBER?</label>
+            <select id="cli-metodo" class="form-input" onchange="atualizarInterfaceCheckout()">
+                <option value="delivery">Delivery (Entrega em Casa)</option>
+                <option value="retirada">Retirada no Local</option>
+            </select>
+        </div>
 
-<div id="carrinho-modal">
-    <div style="padding: 25px; border-bottom: 1px solid #eee; display:flex; justify-content: space-between;">
-        <h2 style="font-weight: 800;">🛒 Detalhes do Pedido</h2>
-        <button onclick="toggleCarrinho()" style="border:none; background:#f1f2f6; width:40px; height:40px; border-radius:50%;">✕</button>
-    </div>
-    
-    <div style="flex:1; overflow-y:auto; padding: 20px;">
-        <div id="cart-itens-lista"></div>
-        <div class="form-checkout">
-            <div class="input-group">
-                <label style="color:var(--primary)">Obrigatório: COMO DESEJA RECEBER?</label>
-                <select id="c-metodo" onchange="atualizarTotal()">
-                    <option value="" selected disabled>Escolha uma opção...</option>
-                    <option value="Delivery">Delivery (Taxa R$ 2,00)</option>
-                    <option value="Retirada">Retirada no Local (Grátis)</option>
-                </select>
+        <div id="sessao-endereco">
+            <div class="form-group">
+                <label>ENDEREÇO (Rua, Número, Bairro)</label>
+                <input type="text" id="cli-end" class="form-input" placeholder="Ex: Rua das Flores, 123, Centro">
             </div>
-            
-            <div id="campos-cliente" style="display:none;">
-                <div class="input-group"><label>NOME</label><input type="text" id="c-nome" placeholder="Digite seu nome"></div>
-                
-                <div id="secao-endereco" style="display:none;">
-                    <div class="input-group"><label>ENDEREÇO</label><input type="text" id="c-end" placeholder="Rua, número e bairro"></div>
-                    <div class="input-group"><label>PONTO DE REFERÊNCIA</label><input type="text" id="c-ref" placeholder="Ex: Próximo ao mercado"></div>
-                </div>
-
-                                <div class="input-group">
-                    <label>PAGAMENTO</label>
-                    <select id="c-pag" onchange="toggleTroco()">
-                        <option value="" selected disabled>Escolha uma opção...</option>
-                        <option value="Pix">Pix</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                       
-                    </select>
-                </div>
-
-                <div id="secao-troco" style="display:none;">
-                    <div class="input-group">
-                        <label>TROCO PARA QUANTO?</label>
-                        <input type="text" id="c-troco" placeholder="Ex: R$ 50,00">
-                    </div>
-                </div>
+            <div class="form-group">
+                <label>PONTO DE REFERÊNCIA</label>
+                <input type="text" id="cli-ref" class="form-input" placeholder="Ex: Perto do posto de saúde">
             </div>
         </div>
-    </div>
 
-    <div style="padding: 25px; border-top: 1px solid #eee;">
-        <div style="display:flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-            <span>Produtos:</span>
-            <span id="resumo-subtotal">R$ 0,00</span>
+        <div class="form-group">
+            <label>FORMA DE PAGAMENTO</label>
+            <select id="cli-pagamento" class="form-input" onchange="atualizarInterfaceCheckout()">
+                <option value="Pix">Pix</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
         </div>
-        <div id="linha-taxa" style="display:none; justify-content: space-between; margin-bottom: 15px; font-size: 0.9rem;">
-            <span>Taxa de Entrega:</span>
-            <span id="resumo-taxa">R$ 0,00</span>
+
+        <div id="sessao-troco" class="hidden">
+            <div class="form-group">
+                <label>TROCO PARA QUANTO?</label>
+                <input type="number" id="cli-troco" class="form-input" placeholder="Ex: 50">
+            </div>
         </div>
-        <div style="display:flex; justify-content: space-between; margin-bottom: 15px; font-weight: 800; font-size: 1.3rem;">
-            <span>TOTAL:</span>
-            <span id="modal-total" style="color:var(--green);">R$ 0,00</span>
+
+        <div class="resumo-valores">
+            <div class="resumo-item"><span>Produtos:</span> <span id="resumo-prod">R$ 0,00</span></div>
+            <div class="resumo-item" id="linha-taxa"><span>Taxa de Entrega:</span> <span>R$ 3,00</span></div>
+            <div class="resumo-total"><span>TOTAL:</span> <span id="resumo-total">R$ 0,00</span></div>
         </div>
-        <button class="btn-finalizar" onclick="enviarPedido()">FECHAR PEDIDO NO WHATSAPP</button>
+
+        <div style="display:flex; gap:10px;">
+            <button onclick="fecharCheckout()" style="flex:1; padding:15px; border-radius:12px; border:none; background:#eee; font-weight:bold;">Voltar</button>
+            <button onclick="finalizarPedido()" style="flex:2; padding:15px; border-radius:12px; border:none; background:var(--green); color:white; font-weight:bold;">ENVIAR NO WHATSAPP</button>
+        </div>
     </div>
 </div>
 
-<div class="footer-cart" id="footer-cart" onclick="toggleCarrinho()">
-    <div>
-        <span id="cart-qty-badge" style="background:var(--primary); padding: 4px 10px; border-radius:8px; font-size:14px; font-weight:800;">0</span>
-        <span style="margin-left:12px; font-weight: 800;">R$ <span id="display-total">0,00</span></span>
-    </div>
-    <div style="background: var(--primary); padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: 12px;">VER PEDIDO</div>
+<div class="container" id="cardapio"></div>
+
+<div class="cart-footer" id="cart-footer" onclick="abrirCheckout()">
+    <span style="font-weight:800;">🛒 <span id="cart-qnt">0</span> Itens</span>
+    <button style="background:var(--green); color:white; border:none; padding:10px 20px; border-radius:15px; font-weight:800;">
+        VER PEDIDO - R$ <span id="cart-total">0,00</span>
+    </button>
 </div>
 
 <script>
-    const WHATSAPP_NUM = "5598984502253";
-
-    const menuCorreto = {
-        "Hamburguers": [
-            { nome: "Tradicional", desc: "Carne grelhada, queijo mussarela, ovo, calabresa, alface, cebola, tomate e molho especial.", preco: 10.00 },
-            { nome: "X Bacon", desc: "Carne grelhada, queijo cheddar, bacon, ovo, cebola caramelizada e molho especial.", preco: 14.00 },
-            { nome: "X Calabresa e Bacon", desc: "Carne grelhada, queijo cheddar, ovo, bacon, calabresa e cebola caramelizada.", preco: 15.00 },
-            { nome: "Veterano", desc: "2 Carnes grelhadas, ovo, queijo mussarela, calabresa, bacon, alface, cebola, tomate e molho especial.", preco: 20.00 }
-        ],
-        "Hamburguer Artesanal": [
-            { nome: "Tradicional Artesanal", desc: "Carne artesanal grelhada, queijo mussarela, calabresa, ovo, alface, cebola, tomate e molho especial.", preco: 13.00 },
-            { nome: "X Bacon Duplo", desc: "2 Carnes artesanais grelhadas, ovo, queijo cheddar, bacon e cebola caramelizada.", preco: 20.00 },
-            { nome: "X Calabresa/B", desc: "Carne artesanal grelhada, ovo, queijo cheddar, calabresa, bacon e cebola caramelizada.", preco: 18.00 },
-            { nome: "Veterano Artesanal", desc: "2 Carnes artesanais grelhadas, ovo, queijo mussarela, calabresa, bacon, alface, cebola, tomate e molho especial.", preco: 25.00 }
-        ],
-        "Sucos": [
-            { nome: "Suco de Acerola", desc: "Natural e gelado (400ml).", preco: 5.00 },
-            { nome: "Suco de Goiaba", desc: "Natural e gelado (400ml).", preco: 5.00 }
-        ],
-        "Vitaminas": [
-            { nome: "Acerola", desc: "Vitamina cremosa com leite.", preco: 7.00 },
-            { nome: "Goiaba", desc: "Vitamina cremosa com leite.", preco: 7.00 }
-        ],
-        "Refrigerante": [
-            { nome: "Guaraná 200ml", desc: "Antarctica gelada.", preco: 3.00 },
-            { nome: "Pepsi 200ml", desc: "Gelada.", preco: 3.00 },
-            { nome: "Pepsi 1 Litro", desc: "Garrafa.", preco: 8.00 },
-            { nome: "Guaraná 1 Litro", desc: "Antarctica.", preco: 8.00 }
-        ]
+    const WHATSAPP = "5598984502253";
+    const TAXA_DELIVERY = 3.00;
+    
+    let menu = JSON.parse(localStorage.getItem('tanamao_menu_v6')) || {
+        "Hambúrgueres": [{ nome: "X-Bacon", desc: "Pão, carne, queijo e bacon.", preco: 22.00, foto: "", status: "ativo" }],
+        "Bebidas": [{ nome: "Coca-Cola", desc: "Lata 350ml", preco: 6.00, foto: "", status: "ativo" }]
     };
 
     function render() {
-        const container = document.getElementById('cardapio-dinamico');
+        const container = document.getElementById('cardapio');
         container.innerHTML = "";
-        for (let cat in menuCorreto) {
-            let html = `<div class="categoria-titulo">${cat}</div>`;
-            menuCorreto[cat].forEach((p) => {
-                html += `<div class="item" data-nome="${p.nome}" data-preco="${p.preco}">
+        for (let cat in menu) {
+            let catHtml = `<div class="cat-title">${cat}</div>`;
+            menu[cat].forEach((p, i) => {
+                catHtml += `
+                <div class="item">
+                    <img src="${p.foto || 'https://via.placeholder.com/100?text=FOTO'}" class="item-img">
                     <div class="item-info">
-                        <p class="item-name">${p.nome}</p>
-                        <p class="item-desc">${p.desc}</p>
-                        <span class="item-price">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+                        <div class="item-name">${p.nome}</div>
+                        <div class="item-desc">${p.desc}</div>
+                        <div class="item-price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                     </div>
-                    <div class="controls">
-                        <button class="btn-qty" onclick="qty(this, 1)">+</button>
-                        <span class="qty">0</span>
-                        <button class="btn-qty" onclick="qty(this, -1)">-</button>
+                    <div class="qty-box">
+                        <button class="btn-qty" onclick="changeQty(this, -1)">-</button>
+                        <span class="val-qty" data-name="${p.nome}" data-price="${p.preco}">0</span>
+                        <button class="btn-qty" onclick="changeQty(this, 1)">+</button>
                     </div>
                 </div>`;
             });
-            container.insertAdjacentHTML('beforeend', html);
+            container.insertAdjacentHTML('beforeend', catHtml);
         }
+        document.getElementById('status-loja').innerHTML = '<span class="status-badge open">● Aberto</span>';
     }
 
-    function qty(btn, d) {
-        const s = btn.parentElement.querySelector('.qty');
-        let v = parseInt(s.innerText) + d;
-        if(v < 0) v = 0; s.innerText = v;
-        atualizarTotal();
+    function changeQty(btn, d) {
+        let span = btn.parentElement.querySelector('.val-qty');
+        let v = parseInt(span.innerText) + d;
+        if (v < 0) v = 0; span.innerText = v;
+        updateCart();
     }
 
-    function toggleTroco() {
-        const pag = document.getElementById('c-pag').value;
-        document.getElementById('secao-troco').style.display = pag === "Dinheiro" ? 'block' : 'none';
-    }
-
-    function atualizarTotal() {
-        let sub = 0, q = 0;
-        document.querySelectorAll('.item').forEach(i => {
-            const n = parseInt(i.querySelector('.qty').innerText);
-            sub += parseFloat(i.getAttribute('data-preco')) * n;
+    function updateCart() {
+        let subtotal = 0, q = 0;
+        document.querySelectorAll('.val-qty').forEach(s => {
+            const n = parseInt(s.innerText);
+            subtotal += n * parseFloat(s.getAttribute('data-price'));
             q += n;
         });
-        
-        const metodo = document.getElementById('c-metodo').value;
-        const secaoCampos = document.getElementById('campos-cliente');
-        const secaoEnd = document.getElementById('secao-endereco');
-        const linhaTaxa = document.getElementById('linha-taxa');
-
-        if(metodo !== "") {
-            secaoCampos.style.display = 'block';
-            if(metodo === "Delivery") {
-                secaoEnd.style.display = 'block';
-                linhaTaxa.style.display = 'flex';
-                var taxa = q > 0 ? 2.0 : 0;
-            } else {
-                secaoEnd.style.display = 'none';
-                linhaTaxa.style.display = 'none';
-                var taxa = 0;
-            }
-        } else {
-            secaoCampos.style.display = 'none';
-            linhaTaxa.style.display = 'none';
-            var taxa = 0;
-        }
-        
-        document.getElementById('resumo-subtotal').innerText = `R$ ${sub.toFixed(2).replace('.', ',')}`;
-        document.getElementById('resumo-taxa').innerText = `R$ ${taxa.toFixed(2).replace('.', ',')}`;
-        document.getElementById('display-total').innerText = (sub + taxa).toFixed(2).replace('.', ',');
-        document.getElementById('modal-total').innerText = "R$ " + (sub + taxa).toFixed(2).replace('.', ',');
-        document.getElementById('cart-qty-badge').innerText = q;
-        document.getElementById('footer-cart').classList.toggle('visible', q > 0);
+        document.getElementById('cart-total').innerText = subtotal.toFixed(2).replace('.',',');
+        document.getElementById('cart-qnt').innerText = q;
+        document.getElementById('cart-footer').style.display = q > 0 ? 'flex' : 'none';
     }
 
-    function toggleCarrinho() {
-        const m = document.getElementById('carrinho-modal');
-        const l = document.getElementById('cart-itens-lista');
-        l.innerHTML = "";
-        document.querySelectorAll('.item').forEach(i => {
-            const q = parseInt(i.querySelector('.qty').innerText);
-            if(q > 0) l.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span><b>${q}x</b> ${i.getAttribute('data-nome')}</span><b>R$ ${(parseFloat(i.getAttribute('data-preco'))*q).toFixed(2).replace('.',',')}</b></div>`;
-        });
-        m.classList.toggle('active');
-        document.getElementById('overlay').style.display = m.classList.contains('active') ? 'block' : 'none';
+    function abrirCheckout() {
+        document.getElementById('modal-checkout').style.display = 'block';
+        atualizarInterfaceCheckout();
     }
 
-    function enviarPedido() {
-        const metodo = document.getElementById('c-metodo').value;
-        const nome = document.getElementById('c-nome').value;
+    function fecharCheckout() { document.getElementById('modal-checkout').style.display = 'none'; }
 
-        if(!metodo) return alert("Por favor, selecione se deseja Entrega ou Retirada!");
-        if(!nome) return alert("Por favor, digite seu nome!");
-
-        let msg = `*NOVO PEDIDO - TÁ NA MÃO*%0A%0A*Cliente:* ${nome}%0A*Opção:* ${metodo}%0A`;
-        if(metodo === "Delivery") msg += `*Endereço:* ${document.getElementById('c-end').value}%0A*Ref:* ${document.getElementById('c-ref').value}%0A`;
+    function atualizarInterfaceCheckout() {
+        const metodo = document.getElementById('cli-metodo').value;
+        const pagamento = document.getElementById('cli-pagamento').value;
         
-        msg += `*Pagamento:* ${document.getElementById('c-pag').value}%0A`;
-        if(document.getElementById('c-pag').value === "Dinheiro" && document.getElementById('c-troco').value) msg += `*Troco para:* ${document.getElementById('c-troco').value}%0A`;
+        // Mostrar/Esconder endereço
+        document.getElementById('sessao-endereco').classList.toggle('hidden', metodo === 'retirada');
+        document.getElementById('linha-taxa').classList.toggle('hidden', metodo === 'retirada');
         
-        msg += `%0A*--- ITENS ---*%0A`;
+        // Mostrar/Esconder troco
+        document.getElementById('sessao-troco').classList.toggle('hidden', pagamento !== 'Dinheiro');
 
-        let subtotalProdutos = 0;
-        document.querySelectorAll('.item').forEach(i => {
-            const q = parseInt(i.querySelector('.qty').innerText);
+        // Calcular Totais do Resumo
+        let subtotal = 0;
+        document.querySelectorAll('.val-qty').forEach(s => subtotal += parseInt(s.innerText) * parseFloat(s.getAttribute('data-price')));
+        
+        let taxa = (metodo === 'delivery') ? TAXA_DELIVERY : 0;
+        
+        document.getElementById('resumo-prod').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
+        document.getElementById('resumo-total').innerText = `R$ ${(subtotal + taxa).toFixed(2).replace('.',',')}`;
+    }
+
+    function finalizarPedido() {
+        const nome = document.getElementById('cli-nome').value;
+        const metodo = document.getElementById('cli-metodo').value;
+        const pagamento = document.getElementById('cli-pagamento').value;
+        
+        if(!nome) return alert("Digite seu nome!");
+        if(metodo === 'delivery' && !document.getElementById('cli-end').value) return alert("Digite o endereço para entrega!");
+
+        let subtotal = 0;
+        let itensMsg = "";
+        document.querySelectorAll('.val-qty').forEach(s => {
+            const q = parseInt(s.innerText);
             if(q > 0) {
-                const precoUnit = parseFloat(i.getAttribute('data-preco'));
-                const subItem = precoUnit * q;
-                subtotalProdutos += subItem;
-                msg += `▪️ ${q}x ${i.getAttribute('data-nome')}%0A   (Un. R$ ${precoUnit.toFixed(2).replace('.', ',')}) = *R$ ${subItem.toFixed(2).replace('.', ',')}*%0A`;
+                itensMsg += `✅ ${q}x ${s.getAttribute('data-name')}\n`;
+                subtotal += q * parseFloat(s.getAttribute('data-price'));
             }
         });
 
-        const taxa = metodo === "Delivery" ? 2.0 : 0;
-        msg += `%0A---------------------------%0A`;
-        msg += `*Subtotal:* R$ ${subtotalProdutos.toFixed(2).replace('.', ',')}%0A`;
-        msg += `*Taxa de Entrega:* R$ ${taxa.toFixed(2).replace('.', ',')}%0A`;
-        msg += `*VALOR A PAGAR: R$ ${(subtotalProdutos + taxa).toFixed(2).replace('.', ',')}*`;
+        let taxa = (metodo === 'delivery') ? TAXA_DELIVERY : 0;
+        let totalFinal = subtotal + taxa;
 
-        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${msg}`);
-    }
+        let msg = `*NOVO PEDIDO - TÁ NA MÃO*\n`;
+        msg += `------------------------------\n`;
+        msg += `👤 *Cliente:* ${nome}\n`;
+        msg += `📍 *Entrega:* ${metodo === 'delivery' ? 'Delivery 🛵' : 'Retirada no Local 🛍️'}\n`;
+        
+        if(metodo === 'delivery') {
+            msg += `🏠 *Endereço:* ${document.getElementById('cli-end').value}\n`;
+            msg += `📍 *Ref:* ${document.getElementById('cli-ref').value}\n`;
+            msg += `🚚 *Taxa:* R$ 3,00\n`;
+        }
 
-    function abrirAdmin() {
-        if(prompt("Senha:") === "1234") alert("ADM liberado.");
+        msg += `💳 *Pagamento:* ${pagamento}\n`;
+        if(pagamento === 'Dinheiro' && document.getElementById('cli-troco').value) {
+            msg += `💵 *Troco para:* R$ ${document.getElementById('cli-troco').value}\n`;
+        }
+
+        msg += `\n*ITENS:*\n${itensMsg}`;
+        msg += `\n*TOTAL: R$ ${totalFinal.toFixed(2).replace('.',',')}*`;
+        
+        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`);
     }
 
     window.onload = render;
 </script>
 </body>
 </html>
-
-
