@@ -1,314 +1,317 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TÁ NA MÃO | Cardápio Digital</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --primary: #ff4757; --green: #2ed573; --dark: #1e272e; --admin: #3742fa; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { 
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
-                        url('https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=2072&auto=format&fit=crop');
-            background-size: cover; background-attachment: fixed; background-position: center;
-            color: white; padding-bottom: 120px; min-height: 100vh;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TÁ NA MÃO | Cardápio Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #ff4757; --green: #2ed573; --dark: #1e272e; --admin: #3742fa; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                        url('https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover; background-attachment: fixed; background-position: center;
+            color: white; padding-bottom: 120px; min-height: 100vh;
+        }
 
-        header { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
-        header h1 { font-weight: 800; font-size: 1.8rem; }
-        header h1 span { color: var(--primary); }
+        header { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
+        header h1 { font-weight: 800; font-size: 1.8rem; }
+        header h1 span { color: var(--primary); }
 
-        .btn-adm-trigger { position: absolute; right: 15px; top: 25px; border: none; background: rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
-        
-        .admin-box { background: var(--admin); color: white; margin: 15px; padding: 20px; border-radius: 20px; display: none; border: 2px solid rgba(255,255,255,0.2); }
-        .admin-input { width: 100%; padding: 10px; border-radius: 10px; border: none; margin-top: 5px; background: white; color: black; font-size: 14px; }
-        
-        .horarios-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
-        .dia-label { font-size: 10px; font-weight: 800; align-self: center; }
+        .btn-adm-trigger { position: absolute; right: 15px; top: 25px; border: none; background: rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
+        
+        .admin-box { background: var(--admin); color: white; margin: 15px; padding: 20px; border-radius: 20px; display: none; border: 2px solid rgba(255,255,255,0.2); }
+        .admin-input { width: 100%; padding: 10px; border-radius: 10px; border: none; margin-top: 5px; background: white; color: black; font-size: 14px; }
+        
+        .horarios-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
+        .dia-label { font-size: 10px; font-weight: 800; align-self: center; }
 
-        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
-        .open { background: var(--green); color: white; }
-        .closed { background: var(--primary); color: white; }
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
+        .open { background: var(--green); color: white; }
+        .closed { background: var(--primary); color: white; }
 
-        #modal-checkout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; overflow-y: auto; padding: 20px; }
-        .checkout-card { background: white; color: black; border-radius: 25px; padding: 25px; max-width: 500px; margin: 20px auto; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 5px; color: #666; }
-        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; outline: none; }
-        .hidden { display: none; }
-        
-        .resumo-valores { background: #f8f9fa; padding: 15px; border-radius: 15px; margin: 20px 0; }
-        .resumo-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; color: var(--green); border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; }
+        #modal-checkout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; overflow-y: auto; padding: 20px; }
+        .checkout-card { background: white; color: black; border-radius: 25px; padding: 25px; max-width: 500px; margin: 20px auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 5px; color: #666; }
+        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; outline: none; }
+        .hidden { display: none; }
+        
+        .resumo-valores { background: #f8f9fa; padding: 15px; border-radius: 15px; margin: 20px 0; }
+        .resumo-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; color: var(--green); border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; }
 
-        .container { max-width: 500px; margin: auto; padding: 15px; }
-        .cat-header { display: flex; justify-content: space-between; align-items: center; margin: 30px 0 15px; }
-        .cat-title { font-weight: 800; font-size: 1.3rem; color: var(--primary); }
-        .btn-add-item { background: var(--green); color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; }
+        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .cat-header { display: flex; justify-content: space-between; align-items: center; margin: 30px 0 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .cat-title { font-weight: 800; font-size: 1.3rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-add-item { background: var(--green); color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; }
 
-        .item { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border-radius: 20px; padding: 15px; display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .item-img { width: 80px; height: 80px; border-radius: 15px; object-fit: cover; background: #333; flex-shrink: 0; }
-        .item-info { flex: 1; }
-        .item-price { color: var(--green); font-weight: 800; margin-top: 4px; }
-        
-        /* SELETOR DE QUANTIDADE MELHORADO */
-        .qty-box { display: flex; align-items: center; background: rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 4px; gap: 8px; margin-left: 5px; }
-        .btn-qty { background: var(--primary); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .val-qty { font-weight: 800; min-width: 18px; text-align: center; font-size: 14px; }
+        .item { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border-radius: 20px; padding: 15px; display: flex; gap: 15px; margin-bottom: 15px; align-items: center; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .item-img { width: 80px; height: 80px; border-radius: 15px; object-fit: cover; background: #333; flex-shrink: 0; }
+        .item-info { flex: 1; }
+        .item-price { color: var(--green); font-weight: 800; margin-top: 4px; }
+        
+        .qty-box { display: flex; align-items: center; background: rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 4px; gap: 8px; }
+        .btn-qty { background: var(--primary); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .val-qty { font-weight: 800; min-width: 18px; text-align: center; font-size: 14px; }
 
-        .cart-footer { position: fixed; bottom: 20px; left: 15px; right: 15px; background: white; color: black; padding: 18px; border-radius: 25px; display: none; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; }
-    </style>
+        .cart-footer { position: fixed; bottom: 20px; left: 15px; right: 15px; background: white; color: black; padding: 18px; border-radius: 25px; display: none; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; }
+    </style>
 </head>
 <body>
 
 <header>
-    <h1>TÁ NA <span>MÃO</span></h1>
-    <div id="status-loja"></div>
-    <button class="btn-adm-trigger" onclick="ativarPainel()"><i class="fa-solid fa-lock"></i></button>
+    <h1>TÁ NA <span>MÃO</span></h1>
+    <div id="status-loja"></div>
+    <button class="btn-adm-trigger" onclick="ativarPainel()"><i class="fa-solid fa-lock"></i></button>
 </header>
 
 <div class="admin-box" id="painel-adm">
-    <h3 style="margin-bottom:10px">⚙️ Programação da Semana</h3>
-    <div id="horarios-config" class="horarios-grid"></div>
-    <button onclick="salvarHorarios()" style="width:100%; padding:12px; border-radius:10px; border:none; background:var(--green); color:white; font-weight:bold; margin-top:10px; cursor:pointer;">SALVAR PROGRAMAÇÃO</button>
+    <h3 style="margin-bottom:10px">⚙️ Painel de Controle</h3>
+    <div id="horarios-config" class="horarios-grid"></div>
+    <button onclick="salvarHorarios()" style="width:100%; padding:12px; border-radius:10px; border:none; background:var(--green); color:white; font-weight:bold; margin-top:10px; cursor:pointer;">SALVAR PROGRAMAÇÃO</button>
 </div>
 
 <div id="modal-checkout">
-    <div class="checkout-card">
-        <h2 style="margin-bottom: 15px;">Finalizar Pedido</h2>
-        <div class="form-group">
-            <label>SEU NOME</label>
-            <input type="text" id="cli-nome" class="form-input" placeholder="Como te chamamos?">
-        </div>
-        <div class="form-group">
-            <label>COMO QUER RECEBER?</label>
-            <select id="cli-metodo" class="form-input" onchange="atualizarInterfaceCheckout()">
-                <option value="" disabled selected hidden>Escolha uma opção</option>
-                <option value="delivery">Delivery (Entrega)</option>
-                <option value="retirada">Retirada no Local</option>
-            </select>
-        </div>
-        <div id="sessao-endereco" class="hidden">
-            <input type="text" id="cli-end" class="form-input" placeholder="Rua, Número e Bairro" style="margin-bottom:10px">
-            <input type="text" id="cli-ref" class="form-input" placeholder="Ponto de Referência">
-        </div>
-        <div class="form-group" style="margin-top:15px">
-            <label>FORMA DE PAGAMENTO</label>
-            <select id="cli-pagamento" class="form-input" onchange="atualizarInterfaceCheckout()">
-                <option value="" disabled selected hidden>Escolha o pagamento</option>
-                <option value="Pix">Pix</option>
-                <option value="Dinheiro">Dinheiro</option>
-            </select>
-        </div>
-        <div id="sessao-troco" class="hidden">
-            <input type="number" id="cli-troco" class="form-input" placeholder="Troco para quanto?">
-        </div>
-        <div class="form-group">
-            <label>OBSERVAÇÕES (OPCIONAL)</label>
-            <textarea id="cli-obs" class="form-input" rows="2" placeholder="Ex: tirar cebola, ponto da carne..."></textarea>
-        </div>
-        <div class="resumo-valores">
-            <div class="resumo-total"><span>TOTAL:</span> <span id="resumo-total">R$ 0,00</span></div>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="fecharCheckout()" style="flex:1; padding:15px; border-radius:12px; border:none; background:#eee; font-weight:bold;">Voltar</button>
-            <button onclick="finalizarPedido()" style="flex:2; padding:15px; border-radius:12px; border:none; background:var(--green); color:white; font-weight:bold;">ENVIAR WHATSAPP</button>
-        </div>
-    </div>
+    <div class="checkout-card">
+        <h2 style="margin-bottom: 15px;">Finalizar Pedido</h2>
+        <div class="form-group">
+            <label>SEU NOME</label>
+            <input type="text" id="cli-nome" class="form-input" placeholder="Como te chamamos?">
+        </div>
+        <div class="form-group">
+            <label>COMO QUER RECEBER?</label>
+            <select id="cli-metodo" class="form-input" onchange="atualizarInterfaceCheckout()">
+                <option value="" disabled selected hidden>Escolha uma opção</option>
+                <option value="delivery">Delivery (Entrega)</option>
+                <option value="retirada">Retirada no Local</option>
+            </select>
+        </div>
+        <div id="sessao-endereco" class="hidden">
+            <input type="text" id="cli-end" class="form-input" placeholder="Rua, Número e Bairro" style="margin-bottom:10px">
+            <input type="text" id="cli-ref" class="form-input" placeholder="Ponto de Referência">
+        </div>
+        <div class="form-group" style="margin-top:15px">
+            <label>FORMA DE PAGAMENTO</label>
+            <select id="cli-pagamento" class="form-input" onchange="atualizarInterfaceCheckout()">
+                <option value="" disabled selected hidden>Escolha o pagamento</option>
+                <option value="Pix">Pix</option>
+                <option value="Cartão">Cartão</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
+        </div>
+        <div id="sessao-troco" class="hidden">
+            <input type="number" id="cli-troco" class="form-input" placeholder="Troco para quanto?">
+        </div>
+        <div class="form-group">
+            <label>OBSERVAÇÕES</label>
+            <textarea id="cli-obs" class="form-input" rows="2" placeholder="Ex: tirar cebola, ponto da carne..."></textarea>
+        </div>
+        <div class="resumo-valores">
+            <div class="resumo-total"><span>TOTAL:</span> <span id="resumo-total">R$ 0,00</span></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="fecharCheckout()" style="flex:1; padding:15px; border-radius:12px; border:none; background:#eee; font-weight:bold;">Voltar</button>
+            <button onclick="finalizarPedido()" style="flex:2; padding:15px; border-radius:12px; border:none; background:var(--green); color:white; font-weight:bold;">ENVIAR WHATSAPP</button>
+        </div>
+    </div>
 </div>
 
 <div class="container" id="cardapio"></div>
 
 <div class="cart-footer" id="cart-footer" onclick="abrirCheckout()">
-    <span style="font-weight:800;">🛒 <span id="cart-qnt">0</span> Itens</span>
-    <button style="background:var(--green); color:white; border:none; padding:10px 20px; border-radius:15px; font-weight:800;">VER PEDIDO</button>
+    <span style="font-weight:800;">🛒 <span id="cart-qnt">0</span> Itens</span>
+    <button style="background:var(--green); color:white; border:none; padding:10px 20px; border-radius:15px; font-weight:800;">VER PEDIDO</button>
 </div>
 
 <script>
-    const WHATSAPP = "5598984502253";
-    let isAdm = false;
+    const WHATSAPP = "5598984502253";
+    let isAdm = false;
 
-    let agenda = JSON.parse(localStorage.getItem('tanamao_agenda')) || {
-        0:{abre:"18:00",fecha:"23:00"}, 1:{abre:"18:00",fecha:"23:00"}, 2:{abre:"18:00",fecha:"23:00"},
-        3:{abre:"18:00",fecha:"23:00"}, 4:{abre:"18:00",fecha:"23:00"}, 5:{abre:"18:00",fecha:"23:00"}, 6:{abre:"18:00",fecha:"23:00"}
-    };
+    // Agenda de horários
+    let agenda = JSON.parse(localStorage.getItem('tanamao_agenda')) || {
+        0:{abre:"18:00",fecha:"23:00"}, 1:{abre:"18:00",fecha:"23:00"}, 2:{abre:"18:00",fecha:"23:00"},
+        3:{abre:"18:00",fecha:"23:00"}, 4:{abre:"18:00",fecha:"23:00"}, 5:{abre:"18:00",fecha:"23:00"}, 6:{abre:"18:00",fecha:"23:00"}
+    };
 
-    let menu = JSON.parse(localStorage.getItem('tanamao_menu_v6')) || {
-        "Hambúrgueres": [],
-        "Bebidas": []
-    };
+    // Cardápio com as novas classes: Artesanais e Combos
+    let menu = JSON.parse(localStorage.getItem('tanamao_menu_v7')) || {
+        "Hambúrgueres": [],
+        "Artesanais": [],
+        "Bebidas": [],
+        "Combos": []
+    };
 
-    function verificarLojaAberta() {
-        const agora = new Date();
-        const horaAtual = agora.getHours().toString().padStart(2, '0') + ":" + agora.getMinutes().toString().padStart(2, '0');
-        const hoje = agenda[agora.getDay()];
-        return (horaAtual >= hoje.abre && horaAtual <= hoje.fecha);
-    }
+    function verificarLojaAberta() {
+        const agora = new Date();
+        const horaAtual = agora.getHours().toString().padStart(2, '0') + ":" + agora.getMinutes().toString().padStart(2, '0');
+        const hoje = agenda[agora.getDay()];
+        return (horaAtual >= hoje.abre && horaAtual <= hoje.fecha);
+    }
 
-    function render() {
-        const aberto = verificarLojaAberta();
-        const container = document.getElementById('cardapio');
-        container.innerHTML = "";
-        document.getElementById('status-loja').innerHTML = aberto ? '<span class="status-badge open">● Aberto</span>' : '<span class="status-badge closed">● Fechado</span>';
+    function render() {
+        const aberto = verificarLojaAberta();
+        const container = document.getElementById('cardapio');
+        container.innerHTML = "";
+        document.getElementById('status-loja').innerHTML = aberto ? '<span class="status-badge open">● Aberto</span>' : '<span class="status-badge closed">● Fechado</span>';
 
-        for (let cat in menu) {
-            let catHtml = `
-                <div class="cat-header">
-                    <div class="cat-title">${cat}</div>
-                    ${isAdm ? `<button class="btn-add-item" onclick="addItem('${cat}')">+ NOVO ITEM</button>` : ''}
-                </div>`;
-            
-            menu[cat].forEach((p, i) => {
-                catHtml += `
-                <div class="item">
-                    <div style="position:relative">
-                        <img src="${p.foto || 'https://via.placeholder.com/100?text=FOTO'}" class="item-img">
-                        ${isAdm ? `<button class="btn-upload" onclick="document.getElementById('file-${cat}-${i}').click()">📷</button>` : ''}
-                        <input type="file" id="file-${cat}-${i}" style="display:none" onchange="uploadFoto('${cat}', ${i}, this)">
-                    </div>
-                    <div class="item-info">
-                        ${isAdm ? `
-                            <input class="admin-input" value="${p.nome}" onchange="edit('${cat}', ${i}, 'nome', this.value)" placeholder="Nome">
-                            <input class="admin-input" value="${p.desc}" onchange="edit('${cat}', ${i}, 'desc', this.value)" placeholder="Ingredientes" style="margin-top:5px">
-                            <input class="admin-input" type="number" value="${p.preco}" onchange="edit('${cat}', ${i}, 'preco', this.value)" style="width:80px">
-                            <button onclick="deleteItem('${cat}', ${i})" style="color:red; background:none; border:none; font-size:10px; cursor:pointer; margin-top:5px">Excluir</button>
-                        ` : `
-                            <div style="font-weight:700">${p.nome}</div>
-                            <div style="font-size:0.8rem; color:#ddd">${p.desc}</div>
-                            <div class="item-price">R$ ${parseFloat(p.preco || 0).toFixed(2).replace('.',',')}</div>
-                        `}
-                    </div>
-                    ${!isAdm ? `
-                        <div class="qty-box">
-                            <button class="btn-qty" onclick="changeQty(this, -1)">-</button>
-                            <span class="val-qty" data-name="${p.nome}" data-price="${p.preco}">0</span>
-                            <button class="btn-qty" onclick="changeQty(this, 1)">+</button>
-                        </div>
-                    ` : ''}
-                </div>`;
-            });
-            container.insertAdjacentHTML('beforeend', catHtml);
-        }
-    }
+        for (let cat in menu) {
+            let catHtml = `
+                <div class="cat-header">
+                    <div class="cat-title">${cat}</div>
+                    ${isAdm ? `<button class="btn-add-item" onclick="addItem('${cat}')">+ ADICIONAR</button>` : ''}
+                </div>`;
+            
+            menu[cat].forEach((p, i) => {
+                catHtml += `
+                <div class="item">
+                    <div style="position:relative">
+                        <img src="${p.foto || 'https://via.placeholder.com/100?text=FOTO'}" class="item-img">
+                        ${isAdm ? `<button class="btn-upload" onclick="document.getElementById('file-${cat}-${i}').click()">📷</button>` : ''}
+                        <input type="file" id="file-${cat}-${i}" style="display:none" onchange="uploadFoto('${cat}', ${i}, this)">
+                    </div>
+                    <div class="item-info">
+                        ${isAdm ? `
+                            <input class="admin-input" value="${p.nome}" onchange="edit('${cat}', ${i}, 'nome', this.value)" placeholder="Nome">
+                            <input class="admin-input" value="${p.desc}" onchange="edit('${cat}', ${i}, 'desc', this.value)" placeholder="Descrição" style="margin-top:5px">
+                            <input class="admin-input" type="number" value="${p.preco}" onchange="edit('${cat}', ${i}, 'preco', this.value)" style="width:80px">
+                            <button onclick="deleteItem('${cat}', ${i})" style="color:red; background:none; border:none; font-size:10px; cursor:pointer; margin-top:5px">Excluir</button>
+                        ` : `
+                            <div style="font-weight:700; font-size: 1rem;">${p.nome}</div>
+                            <div style="font-size:0.75rem; color:#ccc; margin-top: 2px;">${p.desc}</div>
+                            <div class="item-price">R$ ${parseFloat(p.preco || 0).toFixed(2).replace('.',',')}</div>
+                        `}
+                    </div>
+                    ${!isAdm ? `
+                        <div class="qty-box">
+                            <button class="btn-qty" onclick="changeQty(this, -1)">-</button>
+                            <span class="val-qty" data-name="${p.nome}" data-price="${p.preco}">0</span>
+                            <button class="btn-qty" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    ` : ''}
+                </div>`;
+            });
+            container.insertAdjacentHTML('beforeend', catHtml);
+        }
+    }
 
-    function ativarPainel() {
-        if (!isAdm && prompt("Senha:") !== "1234") return;
-        isAdm = !isAdm;
-        document.getElementById('painel-adm').style.display = isAdm ? 'block' : 'none';
-        if(isAdm) {
-            const grid = document.getElementById('horarios-config');
-            grid.innerHTML = "";
-            ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].forEach((dia, idx) => {
-                grid.innerHTML += `<div class="dia-label">${dia}</div>
-                <input type="time" class="admin-input" id="abre-${idx}" value="${agenda[idx].abre}">
-                <input type="time" class="admin-input" id="fecha-${idx}" value="${agenda[idx].fecha}">`;
-            });
-        }
-        render();
-    }
+    function ativarPainel() {
+        if (!isAdm && prompt("Senha:") !== "jorge2026") return;
+        isAdm = !isAdm;
+        document.getElementById('painel-adm').style.display = isAdm ? 'block' : 'none';
+        if(isAdm) {
+            const grid = document.getElementById('horarios-config');
+            grid.innerHTML = "";
+            ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].forEach((dia, idx) => {
+                grid.innerHTML += `<div class="dia-label">${dia}</div>
+                <input type="time" class="admin-input" id="abre-${idx}" value="${agenda[idx].abre}">
+                <input type="time" class="admin-input" id="fecha-${idx}" value="${agenda[idx].fecha}">`;
+            });
+        }
+        render();
+    }
 
-    function changeQty(btn, d) {
-        let span = btn.parentElement.querySelector('.val-qty');
-        let v = parseInt(span.innerText) + d;
-        if (v < 0) v = 0; 
-        span.innerText = v;
-        updateCart();
-    }
+    function changeQty(btn, d) {
+        let span = btn.parentElement.querySelector('.val-qty');
+        let v = parseInt(span.innerText) + d;
+        if (v < 0) v = 0; 
+        span.innerText = v;
+        updateCart();
+    }
 
-    function updateCart() {
-        let subtotal = 0, q = 0;
-        document.querySelectorAll('.val-qty').forEach(s => {
-            const qtd = parseInt(s.innerText);
-            const preco = parseFloat(s.getAttribute('data-price')) || 0;
-            subtotal += qtd * preco;
-            q += qtd;
-        });
-        document.getElementById('cart-qnt').innerText = q;
-        document.getElementById('cart-footer').style.display = q > 0 ? 'flex' : 'none';
-        document.getElementById('resumo-total').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-        return subtotal;
-    }
+    function updateCart() {
+        let subtotal = 0, q = 0;
+        document.querySelectorAll('.val-qty').forEach(s => {
+            const qtd = parseInt(s.innerText);
+            const preco = parseFloat(s.getAttribute('data-price')) || 0;
+            subtotal += qtd * preco;
+            q += qtd;
+        });
+        document.getElementById('cart-qnt').innerText = q;
+        document.getElementById('cart-footer').style.display = q > 0 ? 'flex' : 'none';
+        document.getElementById('resumo-total').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        return subtotal;
+    }
 
-    function abrirCheckout() { 
-        if(!verificarLojaAberta()) {
-            if(!confirm("A loja está fechada no momento. Deseja apenas montar o carrinho?")) return;
-        }
-        updateCart();
-        document.getElementById('modal-checkout').style.display = 'block'; 
-        atualizarInterfaceCheckout(); 
-    }
+    function abrirCheckout() { 
+        updateCart();
+        document.getElementById('modal-checkout').style.display = 'block'; 
+        atualizarInterfaceCheckout(); 
+    }
 
-    function fecharCheckout() { document.getElementById('modal-checkout').style.display = 'none'; }
+    function fecharCheckout() { document.getElementById('modal-checkout').style.display = 'none'; }
 
-    function atualizarInterfaceCheckout() {
-        const metodo = document.getElementById('cli-metodo').value;
-        const pagamento = document.getElementById('cli-pagamento').value;
-        document.getElementById('sessao-endereco').classList.toggle('hidden', metodo !== 'delivery');
-        document.getElementById('sessao-troco').classList.toggle('hidden', pagamento !== 'Dinheiro');
-    }
+    function atualizarInterfaceCheckout() {
+        const metodo = document.getElementById('cli-metodo').value;
+        const pagamento = document.getElementById('cli-pagamento').value;
+        document.getElementById('sessao-endereco').classList.toggle('hidden', metodo !== 'delivery');
+        document.getElementById('sessao-troco').classList.toggle('hidden', pagamento !== 'Dinheiro');
+    }
 
-    function finalizarPedido() {
-        const nome = document.getElementById('cli-nome').value;
-        const metodo = document.getElementById('cli-metodo').value;
-        const pag = document.getElementById('cli-pagamento').value;
-        const obs = document.getElementById('cli-obs').value;
-        
-        if(!nome || !metodo || !pag) return alert("Por favor, preencha Nome, Entrega e Pagamento!");
+    function finalizarPedido() {
+        const nome = document.getElementById('cli-nome').value;
+        const metodo = document.getElementById('cli-metodo').value;
+        const pag = document.getElementById('cli-pagamento').value;
+        const obs = document.getElementById('cli-obs').value;
+        
+        if(!nome || !metodo || !pag) return alert("Por favor, preencha os campos obrigatórios!");
 
-        let msg = `*🍔 NOVO PEDIDO - TÁ NA MÃO*\n`;
-        msg += `------------------------------\n`;
-        msg += `👤 *Cliente:* ${nome}\n`;
-        msg += `📍 *Entrega:* ${metodo === 'delivery' ? 'Delivery' : 'Retirada no Local'}\n`;
-        
-        if(metodo === 'delivery') {
-            msg += `🏠 *Endereço:* ${document.getElementById('cli-end').value}\n`;
-            msg += `📍 *Ref:* ${document.getElementById('cli-ref').value}\n`;
-        }
-        
-        msg += `💳 *Pagamento:* ${pag}\n`;
-        if(pag === 'Dinheiro') msg += `💵 *Troco para:* R$ ${document.getElementById('cli-troco').value}\n`;
-        if(obs) msg += `📝 *Obs:* ${obs}\n`;
-        msg += `------------------------------\n\n`;
-        msg += `*ITENS DO PEDIDO:*\n`;
+        let msg = `*🍔 NOVO PEDIDO - TÁ NA MÃO*\n`;
+        msg += `------------------------------\n`;
+        msg += `👤 *Cliente:* ${nome}\n`;
+        msg += `📍 *Entrega:* ${metodo === 'delivery' ? 'Delivery' : 'Retirada'}\n`;
+        
+        if(metodo === 'delivery') {
+            msg += `🏠 *Endereço:* ${document.getElementById('cli-end').value}\n`;
+            msg += `📍 *Ref:* ${document.getElementById('cli-ref').value}\n`;
+        }
+        
+        msg += `💳 *Pagamento:* ${pag}\n`;
+        if(pag === 'Dinheiro') msg += `💵 *Troco para:* R$ ${document.getElementById('cli-troco').value}\n`;
+        if(obs) msg += `📝 *Obs:* ${obs}\n`;
+        msg += `------------------------------\n\n`;
+        msg += `*ITENS:*\n`;
 
-        let totalGeral = 0;
-        document.querySelectorAll('.val-qty').forEach(s => {
-            const qtd = parseInt(s.innerText);
-            if(qtd > 0) {
-                const n = s.getAttribute('data-name');
-                const p = parseFloat(s.getAttribute('data-price'));
-                totalGeral += (qtd * p);
-                msg += `✅ ${qtd}x ${n} - R$ ${(qtd*p).toFixed(2)}\n`;
-            }
-        });
+        let totalGeral = 0;
+        document.querySelectorAll('.val-qty').forEach(s => {
+            const qtd = parseInt(s.innerText);
+            if(qtd > 0) {
+                const n = s.getAttribute('data-name');
+                const p = parseFloat(s.getAttribute('data-price'));
+                totalGeral += (qtd * p);
+                msg += `✅ ${qtd}x ${n} - R$ ${(qtd*p).toFixed(2)}\n`;
+            }
+        });
 
-        msg += `\n*💰 TOTAL: R$ ${totalGeral.toFixed(2).replace('.',',')}*`;
+        msg += `\n*💰 TOTAL: R$ ${totalGeral.toFixed(2).replace('.',',')}*`;
 
-        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`);
-    }
+        if(!verificarLojaAberta()) msg += `\n\n⚠️ _Pedido feito fora do horário de funcionamento._`;
 
-    // Funções ADM
-    function addItem(cat) { menu[cat].push({ nome: "Novo Item", desc: "Descrição", preco: 0.00, foto: "" }); save(); render(); }
-    function edit(cat, i, campo, valor) { menu[cat][i][campo] = campo === 'preco' ? parseFloat(valor) : valor; save(); }
-    function deleteItem(cat, i) { if(confirm("Excluir item?")) { menu[cat].splice(i,1); save(); render(); } }
-    function uploadFoto(cat, i, input) {
-        const reader = new FileReader();
-        reader.onload = (e) => { menu[cat][i].foto = e.target.result; save(); render(); };
-        reader.readAsDataURL(input.files[0]);
-    }
-    function salvarHorarios() {
-        [0,1,2,3,4,5,6].forEach(idx => {
-            agenda[idx].abre = document.getElementById(`abre-${idx}`).value;
-            agenda[idx].fecha = document.getElementById(`fecha-${idx}`).value;
-        });
-        localStorage.setItem('tanamao_agenda', JSON.stringify(agenda));
-        alert("Horários salvos com sucesso!"); render();
-    }
-    function save() { localStorage.setItem('tanamao_menu_v6', JSON.stringify(menu)); }
+        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`);
+    }
 
-    window.onload = render;
+    // ADM FUNCTIONS
+    function addItem(cat) { menu[cat].push({ nome: "Novo Item", desc: "Descrição do item", preco: 0.00, foto: "" }); save(); render(); }
+    function edit(cat, i, campo, valor) { menu[cat][i][campo] = campo === 'preco' ? parseFloat(valor) : valor; save(); }
+    function deleteItem(cat, i) { if(confirm("Remover este item?")) { menu[cat].splice(i,1); save(); render(); } }
+    function uploadFoto(cat, i, input) {
+        const reader = new FileReader();
+        reader.onload = (e) => { menu[cat][i].foto = e.target.result; save(); render(); };
+        reader.readAsDataURL(input.files[0]);
+    }
+    function salvarHorarios() {
+        [0,1,2,3,4,5,6].forEach(idx => {
+            agenda[idx].abre = document.getElementById(`abre-${idx}`).value;
+            agenda[idx].fecha = document.getElementById(`fecha-${idx}`).value;
+        });
+        localStorage.setItem('tanamao_agenda', JSON.stringify(agenda));
+        alert("Configurações salvas!"); render();
+    }
+    function save() { localStorage.setItem('tanamao_menu_v7', JSON.stringify(menu)); }
+
+    window.onload = render;
 </script>
 </body>
 </html>
